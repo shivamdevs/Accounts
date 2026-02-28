@@ -13,9 +13,10 @@ export const OAUTH_CTX_COOKIE_SAME_SITE = "lax" as const;
 
 export const OAUTH_CTX_COOKIE_NAME = "pb_oauth_ctx";
 
-export const DEFAULT_CONTINUE = "localhost:4011";
+export const DEFAULT_CONTINUE = env.DEFAULT_CONTINUE_URL ??
+	(IS_PROD ? "https://shivamdevs.com" : "http://localhost:4011");
 export const DEFAULT_REDIRECT_URL = env.AUTH_DEFAULT_REDIRECT_URL ??
-	"https://shivamdevs.com";
+	DEFAULT_CONTINUE;
 export const PROFILE_ONBOARDING_URL = env.PROFILE_ONBOARDING_URL ??
 	(IS_PROD
 		? "https://profile.shivamdevs.com/onboarding"
