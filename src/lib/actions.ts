@@ -121,7 +121,7 @@ export async function signUp(
 			passwordConfirm: password,
 			name,
 			role: "user",
-			avatar_url: "https://avatars.shivamdevs.com",
+			avatarUrl: "https://avatars.shivamdevs.com",
 		})) as {
 			id: string;
 			username: string;
@@ -129,7 +129,7 @@ export async function signUp(
 
 		const avatarUrl = getDefaultAvatarUrl(created.id, created.username);
 		await pb.collection("users").update(created.id, {
-			avatar_url: avatarUrl,
+			avatarUrl,
 		});
 
 		await pb.collection("users").requestVerification(email);
