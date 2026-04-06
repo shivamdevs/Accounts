@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import {
+	buildAppUrl,
 	buildProfileOnboardingUrl,
 	COOKIE_DOMAIN,
 	COOKIE_MAX_AGE_SECONDS,
@@ -121,7 +122,7 @@ export async function GET(
 	const { provider } = await context.params;
 	if (!isOAuthProvider(provider)) {
 		return NextResponse.redirect(
-			new URL(
+			buildAppUrl(
 				buildErrorRoute({
 					code: "oauth-provider-not-found",
 					title: "Unsupported OAuth provider",
@@ -131,8 +132,6 @@ export async function GET(
 					primaryHref: ROUTES.signInIdentifier,
 					primaryLabel: "Back to sign in",
 				}),
-				request
-					.url,
 			),
 		);
 	}
@@ -140,7 +139,7 @@ export async function GET(
 	const code = request.nextUrl.searchParams.get("code");
 	if (!code) {
 		return NextResponse.redirect(
-			new URL(
+			buildAppUrl(
 				buildErrorRoute({
 					code: "oauth-missing-code",
 
@@ -151,7 +150,6 @@ export async function GET(
 					primaryHref: ROUTES.signInIdentifier,
 					primaryLabel: "Try sign in again",
 				}),
-				request.url,
 			),
 		);
 	}
@@ -160,7 +158,7 @@ export async function GET(
 	const rawCtx = cookieStore.get(OAUTH_CTX_COOKIE_NAME)?.value;
 	if (!rawCtx) {
 		return NextResponse.redirect(
-			new URL(
+			buildAppUrl(
 				buildErrorRoute({
 					code: "oauth-missing-context",
 					title: "OAuth session expired",
@@ -169,7 +167,6 @@ export async function GET(
 					primaryHref: ROUTES.signInIdentifier,
 					primaryLabel: "Start sign in again",
 				}),
-				request.url,
 			),
 		);
 	}
@@ -180,7 +177,7 @@ export async function GET(
 	} catch {
 		cookieStore.delete(OAUTH_CTX_COOKIE_NAME);
 		return NextResponse.redirect(
-			new URL(
+			buildAppUrl(
 				buildErrorRoute({
 					code: "oauth-invalid-context",
 					title: "Invalid OAuth session",
@@ -189,7 +186,6 @@ export async function GET(
 					primaryHref: ROUTES.signInIdentifier,
 					primaryLabel: "Start sign in again",
 				}),
-				request.url,
 			),
 		);
 	}
@@ -197,7 +193,7 @@ export async function GET(
 	if (oauthCtx.provider !== provider) {
 		cookieStore.delete(OAUTH_CTX_COOKIE_NAME);
 		return NextResponse.redirect(
-			new URL(
+			buildAppUrl(
 				buildErrorRoute({
 					code: "oauth-provider-mismatch",
 					title: "OAuth provider mismatch",
@@ -206,7 +202,6 @@ export async function GET(
 					primaryHref: ROUTES.signInIdentifier,
 					primaryLabel: "Start sign in again",
 				}),
-				request.url,
 			),
 		);
 	}
@@ -223,11 +218,10 @@ export async function GET(
 
 		if (!authData.record.verified) {
 			return NextResponse.redirect(
-				new URL(
+				buildAppUrl(
 					`/signin/v1/identifier?status=verify-required&continue=${
 						encodeURIComponent(oauthCtx.continueUrl)
 					}`,
-					request.url,
 				),
 			);
 		}
@@ -254,21 +248,19 @@ export async function GET(
 		const hasProfile = userId ? await hasProfileForUser(pb, userId) : false;
 		if (!hasProfile && userId) {
 			return NextResponse.redirect(
-				new URL(
+				buildAppUrl(
 					`/redirect?to=${
 						buildProfileOnboardingUrl(
 							normalizeContinueUrl(oauthCtx.continueUrl),
 						)
 					}`,
-					request.url,
 				),
 			);
 		}
 
 		return NextResponse.redirect(
-			new URL(
+			buildAppUrl(
 				`/redirect?to=${normalizeContinueUrl(oauthCtx.continueUrl)}`,
-				request.url,
 			),
 		);
 	} catch (error) {
@@ -278,7 +270,7 @@ export async function GET(
 		});
 		cookieStore.delete(OAUTH_CTX_COOKIE_NAME);
 		return NextResponse.redirect(
-			new URL(
+			buildAppUrl(
 				buildErrorRoute({
 					code: "oauth-failed",
 					title: "OAuth sign-in failed",
@@ -289,7 +281,6 @@ export async function GET(
 					secondaryHref: "/",
 					secondaryLabel: "Go to homepage",
 				}),
-				request.url,
 			),
 		);
 	}

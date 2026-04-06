@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 import {
+	buildAppUrl,
 	buildOAuthRedirectUri,
 	COOKIE_DOMAIN,
 	DEFAULT_CONTINUE,
@@ -22,7 +23,7 @@ export async function GET(
 	const { provider } = await context.params;
 	if (!isOAuthProvider(provider)) {
 		return NextResponse.redirect(
-			new URL(
+			buildAppUrl(
 				buildErrorRoute({
 					code: "oauth-provider-not-found",
 					title: "Unsupported OAuth provider",
@@ -33,7 +34,6 @@ export async function GET(
 					secondaryHref: "/",
 					secondaryLabel: "Go to homepage",
 				}),
-				request.url,
 			),
 		);
 	}
@@ -55,7 +55,7 @@ export async function GET(
 
 		if (!oauth) {
 			return NextResponse.redirect(
-				new URL(
+				buildAppUrl(
 					buildErrorRoute({
 						code: "oauth-provider-unavailable",
 						title: "Provider unavailable",
@@ -66,7 +66,6 @@ export async function GET(
 						secondaryHref: "/",
 						secondaryLabel: "Go to homepage",
 					}),
-					request.url,
 				),
 			);
 		}
@@ -75,7 +74,7 @@ export async function GET(
 		codeVerifier = oauth.codeVerifier;
 	} catch {
 		return NextResponse.redirect(
-			new URL(
+			buildAppUrl(
 				buildErrorRoute({
 					code: "oauth-start-failed",
 					title: "Couldn't start OAuth sign-in",
@@ -86,7 +85,6 @@ export async function GET(
 					secondaryHref: "/",
 					secondaryLabel: "Go to homepage",
 				}),
-				request.url,
 			),
 		);
 	}

@@ -31,6 +31,12 @@ export function isOAuthProvider(value: string): value is OAuthProvider {
 export const OAUTH_REDIRECT_BASE_URL = env.OAUTH_REDIRECT_BASE_URL ??
 	(IS_PROD ? "https://accounts.shivamdevs.com" : "http://localhost:4010");
 
+export const APP_BASE_URL = env.APP_BASE_URL ?? OAUTH_REDIRECT_BASE_URL;
+
+export function buildAppUrl(path: string): URL {
+	return new URL(path, APP_BASE_URL);
+}
+
 export function buildOAuthRedirectUri(provider: OAuthProvider): string {
 	return `${OAUTH_REDIRECT_BASE_URL}/oauth/${provider}/callback`;
 }

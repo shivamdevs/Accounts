@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { buildAppUrl } from "@/lib/constants";
 
 export async function GET(
 	request: NextRequest,
@@ -6,14 +7,14 @@ export async function GET(
 	const to = request.nextUrl.searchParams.get("to");
 	if (!to) {
 		return NextResponse.redirect(
-			new URL("/", request.url),
+			buildAppUrl("/"),
 		);
 	}
 
 	const continueUrl = new URL(to);
 	if (!continueUrl.origin || !continueUrl.pathname) {
 		return NextResponse.redirect(
-			new URL("/", request.url),
+			buildAppUrl("/"),
 		);
 	}
 
