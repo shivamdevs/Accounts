@@ -8,7 +8,7 @@ export const PB_URL = env.NEXT_PUBLIC_PB_URL ?? "http://localhost:8090";
 export const COOKIE_NAME = "pb_auth";
 export const COOKIE_DOMAIN = env.COOKIE_DOMAIN ?? ".shivamdevs.com";
 export const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
-export const COOKIE_SAME_SITE = "strict" as const;
+export const COOKIE_SAME_SITE = "lax" as const;
 export const OAUTH_CTX_COOKIE_SAME_SITE = "lax" as const;
 
 export const OAUTH_CTX_COOKIE_NAME = "pb_oauth_ctx";
