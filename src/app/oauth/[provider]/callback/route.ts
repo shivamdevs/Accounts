@@ -254,14 +254,22 @@ export async function GET(
 		const hasProfile = userId ? await hasProfileForUser(pb, userId) : false;
 		if (!hasProfile && userId) {
 			return NextResponse.redirect(
-				buildProfileOnboardingUrl(
-					normalizeContinueUrl(oauthCtx.continueUrl),
+				new URL(
+					`/redirect?to=${
+						buildProfileOnboardingUrl(
+							normalizeContinueUrl(oauthCtx.continueUrl),
+						)
+					}`,
+					request.url,
 				),
 			);
 		}
 
 		return NextResponse.redirect(
-			normalizeContinueUrl(oauthCtx.continueUrl),
+			new URL(
+				`/redirect?to=${normalizeContinueUrl(oauthCtx.continueUrl)}`,
+				request.url,
+			),
 		);
 	} catch (error) {
 		console.error("OAuth callback failed", {
